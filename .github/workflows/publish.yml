@@ -1,0 +1,38 @@
+name: Node.js Package
+
+on:
+  push:
+    branches:
+      - sui
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+          target: wasm32-wasi
+          components: rust-src
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: https://registry.npmjs.org/
+          scope: "@${{ github.repository_owner }}"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build package
+        run: yarn build
+
+      - name: Publish package
+        run: yarn release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_MOVEFUNS_TOKEN }}
