@@ -19,7 +19,7 @@ impl Target for SuiTarget {
     fn output(self, units: &[CompiledUnit], dest_path: &Path, init_function: &str) -> Result<()> {
         let mut modules = vec![];
 
-        for (i, mv) in units.iter().enumerate() {
+        for (_i, mv) in units.iter().enumerate() {
             let code = mv.serialize();
             modules.push(Module::new(code));
         }

@@ -58,7 +58,9 @@ pub fn build_package(
     }
 
     for dep_dir in dep_dirs {
-        deps.push(dep_dir.to_string());
+        if dep_dir.ends_with(".move") {
+            deps.push(dep_dir.to_string());
+        }
     }
 
     for target_type in target_types {
