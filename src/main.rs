@@ -6,7 +6,7 @@ use clap::Parser;
 use move_web::cli::{CliOptions, Commands};
 
 fn hook_impl(info: &panic::PanicInfo) {
-    println!("{}", info);
+    println!("[DEBUG] info: {}", info);
 }
 
 fn parse_address_map(address_map: &str) -> Result<(&str, &str), String> {
@@ -25,7 +25,7 @@ fn main() -> std::io::Result<()> {
     panic::set_hook(Box::new(hook_impl));
 
     let pwd = env::var("PWD").expect("must has set PWD env");
-    eprintln!("pwd: {:?}", pwd);
+    println!("[DEBUG]pwd: {:?}", pwd);
 
     let args = CliOptions::parse();
 
@@ -69,13 +69,15 @@ fn main() -> std::io::Result<()> {
             );
             match ret {
                 Ok(()) => {
-                    println!("build package ok");
+                    println!("[DEBUG]build package ok");
                 }
                 Err(e) => {
-                    eprintln!("build package error: {:?}", e);
+                    eprintln!("[DEBUG]build package error: {:?}", e);
                 }
             }
         }
+
+        Commands::Disassemble(args) => move_web::disassemble(args),
     }
 
     Ok(())

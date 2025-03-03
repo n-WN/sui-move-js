@@ -26,6 +26,8 @@ pub enum Commands {
         #[clap(long = "init_function", short = 'i')]
         init_function: Option<String>,
     },
+    #[clap(name = "disassemble")]
+    Disassemble(DisassembleArgs),
 }
 
 #[derive(Parser)]

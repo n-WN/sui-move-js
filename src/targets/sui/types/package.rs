@@ -26,7 +26,6 @@ impl Package {
     pub fn new(modules: Vec<Module>, init_script: Option<ScriptFunction>) -> Result<Self> {
         ensure!(!modules.is_empty(), "must at latest one module");
         let package_address = Self::parse_module_address(&modules[0])?;
-
         Ok(Self {
             package_address,
             modules,
@@ -49,8 +48,7 @@ impl Package {
     }
 
     fn parse_module_address(module: &Module) -> Result<AccountAddress> {
-        let compiled_module: CompiledModule = bcs_ext::from_bytes(module.code())
-            .map_err(|e| anyhow::Error::msg(e.to_string()))?;
+        let compiled_module = CompiledModule::deserialize_with_defaults(module.code())?;
         Ok(*compiled_module.address())
     }
 

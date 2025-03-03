@@ -20,11 +20,34 @@ describe('Move', () => {
       preopens: ['/workspace'],
     })
 
+    const listDir = (path: string) => {
+      const files = wasmfs.fs.readdirSync(path)
+      const result: string[] = []
+      files.forEach((file) => {
+        const fullPath = `${path}/${file}`
+        try {
+          const stats = wasmfs.fs.statSync(fullPath)
+          if (stats.isDirectory()) {
+            result.push(...listDir(fullPath))
+          } else {
+            result.push(fullPath)
+          }
+        } catch (error) {
+          // Skip files with errors
+        }
+      })
+      return result
+    }
+
+    const stdlib = listDir('/workspace/framework/move-stdlib/sources')
+    const suiFramework = listDir('/workspace/framework/sui-framework/sources')
+    const dependencyDirs = stdlib.concat(suiFramework).join(",")
+
     await cli.run([
       '--',
       'build',
       '--dependency_dirs',
-      '/workspace/framework/move-stdlib,/workspace/framework/sui-framework',
+      dependencyDirs,
       '--address_maps',
       'counter:0x0,std:0x1,sui:0x2',
     ])

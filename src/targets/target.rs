@@ -13,6 +13,7 @@ pub trait Target {
     ) -> anyhow::Result<()>;
 }
 
+#[derive(Debug)]
 pub enum TargetType {
     Sui,
     Unknown,

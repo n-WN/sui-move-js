@@ -233,7 +233,12 @@ export class MovePackage implements IMovePackage {
       preopens: ['/workspace'],
     })
 
-    const depDirs = Array.from(deps).join(',')
+    let depMoves = [];
+    for (const dep of Array.from(deps)) {
+      depMoves.push(this.listDir(wasmfs, dep));
+    }
+    
+    const depDirs = depMoves.join(',')
     const addressMaps = new Array<string>()
     addresses.forEach((val: string, key: string) => {
       addressMaps.push(key + ':' + val)
@@ -245,10 +250,8 @@ export class MovePackage implements IMovePackage {
       initFunction = this.initFunction
     }
 
-    console.log('build deps:', depDirs)
     console.log('build addresses:', addressArgs)
     console.log('is test:', this.test)
-    console.log('initFunction:', initFunction)
 
     await cli.run([
       '--',
@@ -262,5 +265,24 @@ export class MovePackage implements IMovePackage {
       '--init_function',
       initFunction,
     ])
+  }
+
+  listDir(wasmfs: WasmFs, path: string) {
+    const files = wasmfs.fs.readdirSync(path)
+    const result: string[] = []
+    files.forEach((file) => {
+      const fullPath = `${path}/${file}`
+      try {
+        const stats = wasmfs.fs.statSync(fullPath)
+        if (stats.isDirectory()) {
+          result.push(...this.listDir(wasmfs, fullPath))
+        } else if (fullPath.endsWith('.move')) {
+          result.push(fullPath)
+        }
+      } catch (error) {
+        // Skip files with errors
+      }
+    })
+    return result
   }
 }
