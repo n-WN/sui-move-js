@@ -10,7 +10,9 @@ Javascript version of the move language compiler and disassemble
 
 * Compiling move package into blob example
 ```ts
+// 浏览器运行wasm, 文件系统支持
 import { WasmFs } from '@wasmer/wasmfs'
+// 引用来自 movefuns/move-js
 import { Git, MovePackage } from '@movefuns/move-js'
 
 const startWasiTask = async (app: HTMLDivElement) => {
